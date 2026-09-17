@@ -20,7 +20,7 @@ from telegram.ext import (
 load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-DATA_FILE = Path(__file__).parent / "shared_data.json"
+DATA_FILE = Path("/data/shared_data.json")
 
 MAX_MEMBERS = 2
 CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
