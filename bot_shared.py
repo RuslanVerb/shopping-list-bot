@@ -371,9 +371,12 @@ async def add_item_to_list(
 
     await sync_list(context, list_id)
 
-    await update.message.reply_text(
-        f"✅ Додано: {text}"
-    )
+    # Видаляємо повідомлення користувача з назвою товару,
+    # щоб не засмічувати чат.
+    try:
+        await update.message.delete()
+    except Exception:
+        pass
 
 
 async def add_command(
