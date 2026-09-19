@@ -175,7 +175,7 @@ def build_keyboard(shopping_list: dict) -> InlineKeyboardMarkup:
     buttons.append(
         [
             InlineKeyboardButton(
-                "🔗 Код списку",
+                "📤 Поділитися списком",
                 callback_data="share_code",
             )
         ]
