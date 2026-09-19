@@ -184,6 +184,15 @@ def build_keyboard(shopping_list: dict) -> InlineKeyboardMarkup:
     buttons.append(
         [
             InlineKeyboardButton(
+                "🚪 Вийти зі списку",
+                callback_data="leave_list",
+            )
+        ]
+    )
+
+    buttons.append(
+        [
+            InlineKeyboardButton(
                 "🏠 Меню",
                 callback_data="home",
             )
@@ -541,6 +550,33 @@ async def button_handler(
                 "Передай цей код другій людині, "
                 "щоб вона могла приєднатися."
             )
+        return
+
+    # Вихід зі списку
+    if query.data == "leave_list":
+        chat_id = str(update.effective_chat.id)
+        data = load_data()
+        list_id = data["users"].get(chat_id)
+
+        if not list_id or list_id not in data["lists"]:
+            await query.message.reply_text(
+                "ℹ️ Ти не приєднаний до жодного списку.",
+                reply_markup=main_menu_keyboard(),
+            )
+            return
+
+        shopping_list = data["lists"][list_id]
+
+        if chat_id in shopping_list["members"]:
+            shopping_list["members"].remove(chat_id)
+
+        data["users"].pop(chat_id, None)
+        save_data(data)
+
+        await query.message.reply_text(
+            "🚪 Ти вийшов зі списку.",
+            reply_markup=main_menu_keyboard(),
+        )
         return
 
     # Меню
