@@ -444,6 +444,22 @@ async def button_handler(
     data = load_data()
     list_id = get_user_list_id(data, chat_id)
 
+
+    # Скасувати поточну дію
+    if query.data == "cancel_action":
+        context.user_data.pop("awaiting_item", None)
+        context.user_data.pop("awaiting_join_code", None)
+
+        if list_id and list_id in data["lists"]:
+            await sync_list(context, list_id)
+        else:
+            await query.message.reply_text(
+                "🏠 Головне меню:",
+                reply_markup=main_menu_keyboard(),
+            )
+
+        return
+
     # Створити список
     if query.data == "create_list":
         if list_id and list_id in data["lists"]:
@@ -462,7 +478,17 @@ async def button_handler(
         context.user_data.pop("awaiting_item", None)
 
         await query.message.reply_text(
-            "🔗 Введи 6-значний код списку:"
+            "🔗 Введи 6-значний код списку:",
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            "❌ Скасувати",
+                            callback_data="cancel_action",
+                        )
+                    ]
+                ]
+            ),
         )
         return
 
@@ -479,7 +505,17 @@ async def button_handler(
         context.user_data.pop("awaiting_join_code", None)
 
         await query.message.reply_text(
-            "➕ Напиши назву товару:"
+            "➕ Напиши назву товару:",
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            "❌ Скасувати",
+                            callback_data="cancel_action",
+                        )
+                    ]
+                ]
+            ),
         )
         return
 
@@ -500,7 +536,7 @@ async def button_handler(
             code = data["lists"][list_id]["invite_code"]
 
             await query.message.reply_text(
-                "🔗 Код твого списку:\n\n"
+                "📤 Поділитися списком\n\n"
                 f"`{code}`\n\n"
                 "Передай цей код другій людині, "
                 "щоб вона могла приєднатися."
