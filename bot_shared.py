@@ -166,8 +166,8 @@ def build_keyboard(shopping_list: dict) -> InlineKeyboardMarkup:
     buttons.append(
         [
             InlineKeyboardButton(
-                "➕ Додати товар",
-                callback_data="add_mode",
+                "📤 Поділитися списком",
+                callback_data="share_code",
             )
         ]
     )
@@ -175,8 +175,8 @@ def build_keyboard(shopping_list: dict) -> InlineKeyboardMarkup:
     buttons.append(
         [
             InlineKeyboardButton(
-                "📤 Поділитися списком",
-                callback_data="share_code",
+                "🔗 Приєднатися до списку",
+                callback_data="join_mode",
             )
         ]
     )
@@ -643,12 +643,13 @@ async def unknown_text(
 
         old_list_id = data["users"].get(chat_id)
 
-        if old_list_id and old_list_id in data["lists"]:
-            await update.message.reply_text(
-                "❌ Ти вже приєднаний до іншого списку.\n"
-                "Спочатку використай окремий список."
-            )
-            return
+        # Якщо користувач був в іншому списку —
+        # прибираємо його зі старого списку,
+        # але сам старий список не видаляємо.
+        if old_list_id and old_list_id in data["lists"] and old_list_id != list_id:
+            old_list = data["lists"][old_list_id]
+            if chat_id in old_list["members"]:
+                old_list["members"].remove(chat_id)
 
         shopping_list["members"].append(chat_id)
         data["users"][chat_id] = list_id
